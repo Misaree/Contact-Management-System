@@ -1,0 +1,183 @@
+import java.util.Scanner;
+import java.util.HashMap;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+class Contact
+{
+    private String name;
+    private String phonenumber;
+    private String email;
+    private String address;
+
+    Contact(String name,String phonenumber,String email,String address)
+    {
+        this.name=name;
+        this.phonenumber=phonenumber;
+        this.email=email;
+        this.address=address;
+    }
+
+    String getName()
+    {
+        return this.name;
+    }
+    String getPhonenumber()
+    {
+        return this.phonenumber;
+    }
+    String getEmail()
+    {
+        return this.email;
+    }
+    String getAddress()
+    {
+        return this.address;
+    }
+}
+class ContactListManager
+{
+    HashMap<String,Contact> contactlist;
+    ContactListManager()
+    {
+        contactlist=new HashMap<>();
+    }
+    void addcontact(String name,String number,String email,String address)
+    {
+        Contact contact=new Contact(name,number,email,address);
+        contactlist.put(name,contact);
+    }
+    void removecontact(String name)
+    {
+        contactlist.remove(name);
+    }
+    Contact searchcontact(String name)
+    {
+        return contactlist.get(name);
+    }
+    void displaycontacts()
+    {
+        for(String name: contactlist.keySet())
+        {
+            Contact contact=contactlist.get(name);
+            System.out.println("Name: "+contact.getName());
+            System.out.println("Phone: "+contact.getPhonenumber());
+            System.out.println("Email: "+contact.getEmail());
+            System.out.println("Address: "+contact.getAddress());
+            System.out.println();
+        }
+    }
+}
+
+public class ContactListApp
+{
+    private ContactListManager contactManager;
+    private JFrame frame;
+    private JTextField namefield,phonefield,emailfield,addressfield;
+    private JTextArea displayarea;
+
+    ContactListApp()
+    {
+        contactManager=new ContactListManager();
+        frame=new JFrame("Contact List Management");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400,400);
+        frame.setLayout(new BorderLayout());
+
+        JPanel inputPanel=new JPanel(new GridLayout(5,2));
+        frame.add(inputPanel,BorderLayout.NORTH);
+
+        inputPanel.add(new JLabel("Name:"));
+        namefield=new JTextField(20);
+        inputPanel.add(namefield);
+
+        inputPanel.add(new JLabel("Phone:"));
+        phonefield=new JTextField(20);
+        inputPanel.add(phonefield);
+
+        inputPanel.add(new JLabel("Email:"));
+        emailfield=new JTextField(20);
+        inputPanel.add(emailfield);
+
+        inputPanel.add(new JLabel("Address:"));
+        addressfield=new JTextField(20);
+        inputPanel.add(addressfield);
+
+        JButton addButton=new JButton("Add Contact");
+        JButton removeButton=new JButton("Remove Contact");
+        JButton searchButton=new JButton("Search Contact");
+        displayarea=new JTextArea(10,30);
+
+        JPanel buttonPanel=new JPanel();
+        buttonPanel.add(addButton);
+        buttonPanel.add(removeButton);
+        buttonPanel.add(searchButton);
+        frame.add(buttonPanel, BorderLayout.CENTER);
+
+        frame.add(new JScrollPane(displayarea),BorderLayout.SOUTH);
+        
+        addButton.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                String name=namefield.getText();
+                String phone=phonefield.getText();
+                String email=emailfield.getText();
+                String address=addressfield.getText();
+                contactManager.addcontact(name,phone,email,address);
+                displayContacts();
+            }
+        });
+
+        removeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String name=namefield.getText();
+                contactManager.removecontact(name);
+                displayContacts();
+            }
+        });
+
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String name=namefield.getText();
+                Contact result=contactManager.searchcontact(name);
+                if(result!=null)
+                {
+                    displayarea.setText("Contact details found as below:\n");
+                    displayarea.append("Name: "+result.getName()+"\n");
+                    displayarea.append("Phone Number: "+result.getPhonenumber()+"\n");
+                    displayarea.append("Email: "+result.getEmail()+"\n");
+                    displayarea.append("Address: "+result.getAddress()+"\n");
+                }
+                else
+                {
+                    displayarea.setText("Oops! Contact not found!");
+                }
+            }
+        });
+        frame.setVisible(true);
+    }
+    private void displayContacts()
+    {
+        displayarea.setText("");
+        for(String name: contactManager.contactlist.keySet())
+        {
+            Contact contact=contactManager.contactlist.get(name);
+            displayarea.append("Name: "+contact.getName()+"\n");
+            displayarea.append("Phone Number: "+contact.getPhonenumber()+"\n");
+            displayarea.append("Email: "+contact.getEmail()+"\n");
+            displayarea.append("Address: "+contact.getAddress()+"\n");
+        }
+    }
+
+
+    public static void main(String args[])
+    {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new ContactListApp();
+            }
+        });
+        System.out.println("Thank you for visiting Contact Management App!Have a great day!");
+    }
+}
